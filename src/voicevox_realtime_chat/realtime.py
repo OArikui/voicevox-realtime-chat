@@ -87,6 +87,8 @@ class RealtimeClient:
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY が設定されていません。")
 
+        import sounddevice as sd
+
         headers = {"Authorization": f"Bearer {self.api_key}"}
         on_status("OpenAI Realtime API に接続しています...")
         async with websockets.connect(
@@ -191,7 +193,7 @@ class RealtimeClient:
                     on_status("VOICEVOXで読み上げています...")
                     await asyncio.to_thread(self._speak, completed_text)
                     on_status("接続中です。続けて話してください。")
-            elif event_type == "response.completed":
+            elif event_type == "response.done":
                 response_text = ""
 
     def _speak(self, text: str) -> None:
