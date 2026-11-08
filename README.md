@@ -2,7 +2,7 @@
 
 Windows向けのデスクトップ音声会話アプリです。OpenAI Realtime APIでマイク音声を認識し、返答テキストをローカルのVOICEVOX Engineで読み上げます。
 
-> 開発状況: v0.2.0 ではRealtime APIへのWebSocket接続、マイク音声の送信、サーバー側音声区間検出、返答テキストの受信、VOICEVOXによる読み上げを実装しています。割り込み時の再生キャンセル、発話の細かな分割再生、会話履歴の永続化は今後の改善対象です。
+> 開発状況: v0.2.1 ではRealtime APIへのWebSocket接続、マイク音声の送信、サーバー側音声区間検出、返答テキストの受信、VOICEVOXによる読み上げを実装しています。割り込み時の再生キャンセル、発話の細かな分割再生、会話履歴の永続化は今後の改善対象です。
 
 ## 必要環境
 
@@ -35,7 +35,8 @@ PowerShellでリポジトリのルートを開きます。
 
 config.yaml でモデル、VOICEVOX話者、読み上げ速度、マイク・スピーカーのデバイスを設定できます。
 
-- audio.sample_rate: OpenAI Realtime PCM入力は 24000 Hz 固定です。変更しないでください。
+- openai.model: Realtime APIのモデル（既定値: `gpt-realtime-1.5`）
+- audio.sample_rate: OpenAI Realtime PCM入力は 24000 Hz 固定です。異なる値を指定すると設定エラーになります。
 - audio.input_device / output_device: sounddevice のデバイス番号またはデバイス名。null の場合はOS既定デバイス
 - openai.instructions: Realtime APIに渡す応答指示
 - voicevox.speaker_id: VOICEVOXの話者スタイルID
@@ -68,7 +69,7 @@ CIではPython 3.11でRuffとpytestを実行します。実機のマイク・ス
 ## 実装ロードマップ
 
 1. 初期GUI、設定管理、VOICEVOX接続確認（v0.1.0）
-2. Realtime API接続、マイク入力、テキスト応答、VOICEVOX読み上げ（v0.2.0）
+2. Realtime API接続、マイク入力、テキスト応答、VOICEVOX読み上げ（v0.2.1）
 3. 割り込み時の再生停止、音声再生とマイク入力のエコー対策
 4. 応答テキストの分割読み上げ、デバイス選択UI、会話履歴
 5. Windows向け配布パッケージとポータブル実行環境
