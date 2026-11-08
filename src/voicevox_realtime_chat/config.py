@@ -14,9 +14,13 @@ class AppConfig:
     title: str
     openai_model: str
     openai_voice: str
+    openai_instructions: str
     voicevox_url: str
     voicevox_speaker_id: int
     voicevox_speed: float
+    sample_rate: int
+    input_device: int | str | None
+    output_device: int | str | None
 
 
 def load_config(path: Path | str = "config.yaml") -> AppConfig:
@@ -30,13 +34,20 @@ def load_config(path: Path | str = "config.yaml") -> AppConfig:
     app = raw.get("app", {})
     openai = raw.get("openai", {})
     voicevox = raw.get("voicevox", {})
+    audio = raw.get("audio", {})
     return AppConfig(
         title=str(app.get("title", "VOICEVOX Realtime Chat")),
         openai_model=str(openai.get("model", "gpt-realtime")),
         openai_voice=str(openai.get("voice", "alloy")),
+        openai_instructions=str(
+            openai.get("instructions", "あなたは親切で簡潔な日本語の音声アシスタントです。")
+        ),
         voicevox_url=str(voicevox.get("base_url", "http://127.0.0.1:50021")).rstrip("/"),
         voicevox_speaker_id=int(voicevox.get("speaker_id", 1)),
         voicevox_speed=float(voicevox.get("speed_scale", 1.0)),
+        sample_rate=int(audio.get("sample_rate", 24000)),
+        input_device=audio.get("input_device"),
+        output_device=audio.get("output_device"),
     )
 
 
