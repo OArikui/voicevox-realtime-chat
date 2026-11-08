@@ -1,8 +1,8 @@
 # VOICEVOX Realtime Chat
 
-Windows向けのデスクトップ音声会話アプリです。OpenAI Realtime APIで会話を行い、AIの返答音声をローカルのVOICEVOX Engineで読み上げることを目指します。
+Windows向けのデスクトップ音声会話アプリです。OpenAI Realtime APIでマイク音声を認識し、返答テキストをローカルのVOICEVOX Engineで読み上げます。
 
-> 開発状況: v0.1.0 は初期セットアップ版です。GUI、設定読み込み、VOICEVOX Engineへの接続確認と音声合成HTTPクライアントを用意しています。マイク入力・Realtime APIの双方向音声会話・割り込み再生は今後の実装対象です。
+> 開発状況: v0.2.0 ではRealtime APIへのWebSocket接続、マイク音声の送信、サーバー側音声区間検出、返答テキストの受信、VOICEVOXによる読み上げを実装しています。割り込み時の再生キャンセル、発話の細かな分割再生、会話履歴の永続化は今後の改善対象です。
 
 ## 必要環境
 
@@ -10,6 +10,7 @@ Windows向けのデスクトップ音声会話アプリです。OpenAI Realtime 
 - Python 3.11 以降
 - VOICEVOX Engine（ローカルで起動）
 - OpenAI API key（Realtime API利用時に必要。ChatGPTのサブスクリプションとは別です）
+- マイクとスピーカー
 
 ## セットアップ
 
@@ -28,26 +29,49 @@ PowerShellでリポジトリのルートを開きます。
 
     python run.py
 
-または仮想環境を有効化した状態で run.bat を実行します。
+または run.bat を実行します。.venv があればそのPythonを使用します。
+
+## 設定
+
+config.yaml でモデル、VOICEVOX話者、読み上げ速度、マイク・スピーカーのデバイスを設定できます。
+
+- audio.sample_rate: マイク入力のサンプルレート（既定値 24000 Hz）
+- audio.input_device / output_device: sounddevice のデバイス番号またはデバイス名。null の場合はOS既定デバイス
+- openai.instructions: Realtime APIに渡す応答指示
+- voicevox.speaker_id: VOICEVOXの話者スタイルID
+
+デバイス一覧は、Python環境で次を実行すると確認できます。
+
+    python -c "import sounddevice as sd; print(sd.query_devices())"
 
 ## VOICEVOX
 
-VOICEVOX Engineを起動し、既定の http://127.0.0.1:50021 でアクセスできるようにしてください。接続確認ボタンでEngineのバージョンを取得できます。
+VOICEVOX Engineを起動し、既定の http://127.0.0.1:50021 でアクセスできるようにしてください。接続確認ボタンでEngineのバージョンを取得できます。会話開始前にEngineが利用可能であることを確認してください。
 
-## 開発
+## 会話の使い方
+
+1. OpenAI APIキーとVOICEVOX Engineを準備します。
+2. アプリを起動し、「会話開始」を押します。
+3. マイクに向かって話します。発話区間検出後、AIの返答テキストをVOICEVOXが読み上げます。
+4. 終了するときは「会話停止」を押します。
+
+Realtime APIの利用にはOpenAI APIの利用料金が発生します。利用状況と料金はOpenAIのAPIダッシュボードで確認してください。
+
+## 開発・テスト
 
     pip install -e ".[dev]"
     ruff check .
     pytest
 
+CIではPython 3.11でRuffとpytestを実行します。実機のマイク・スピーカーおよびVOICEVOX Engineを使う統合テストは別途必要です。
+
 ## 実装ロードマップ
 
 1. 初期GUI、設定管理、VOICEVOX接続確認（v0.1.0）
-2. Realtime API WebSocket接続と会話イベント処理
-3. マイク入力、音声ストリーム、発話区間検出
-4. 返答テキストの分割とVOICEVOX逐次合成・再生
-5. 発話中の割り込み、再生キャンセル、会話履歴
-6. Windows向け配布パッケージとポータブル実行環境
+2. Realtime API接続、マイク入力、テキスト応答、VOICEVOX読み上げ（v0.2.0）
+3. 割り込み時の再生停止、音声再生とマイク入力のエコー対策
+4. 応答テキストの分割読み上げ、デバイス選択UI、会話履歴
+5. Windows向け配布パッケージとポータブル実行環境
 
 ## License
 
