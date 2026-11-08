@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "pytest-qt>=4.4", "ruff>=0.9"]
+dev = ["pytest>=8.0", "ruff>=0.9"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/voicevox_realtime_chat"]
