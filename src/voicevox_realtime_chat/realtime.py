@@ -8,8 +8,6 @@ import threading
 from collections.abc import Callable
 from urllib.parse import urlencode
 
-import sounddevice as sd
-import soundfile as sf
 import websockets
 
 from .voicevox import VoicevoxClient
@@ -59,6 +57,8 @@ class RealtimeClient:
         output_device: int | str | None = None,
         instructions: str = "あなたは親切で簡潔な日本語の音声アシスタントです。",
     ) -> None:
+        if sample_rate != 24000:
+            raise ValueError("OpenAI Realtime PCM input currently requires 24000 Hz.")
         self.api_key = api_key
         self.model = model
         self.voicevox = voicevox
@@ -195,6 +195,9 @@ class RealtimeClient:
                 response_text = ""
 
     def _speak(self, text: str) -> None:
+        import sounddevice as sd
+        import soundfile as sf
+
         self._speaking.set()
         try:
             wav_data = self.voicevox.synthesize(
