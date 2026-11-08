@@ -35,7 +35,7 @@ PowerShellでリポジトリのルートを開きます。
 
 config.yaml でモデル、VOICEVOX話者、読み上げ速度、マイク・スピーカーのデバイスを設定できます。
 
-- audio.sample_rate: マイク入力のサンプルレート（既定値 24000 Hz）
+- audio.sample_rate: OpenAI Realtime PCM入力は 24000 Hz 固定です。変更しないでください。
 - audio.input_device / output_device: sounddevice のデバイス番号またはデバイス名。null の場合はOS既定デバイス
 - openai.instructions: Realtime APIに渡す応答指示
 - voicevox.speaker_id: VOICEVOXの話者スタイルID
