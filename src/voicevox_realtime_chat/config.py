@@ -1,0 +1,61 @@
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import yaml
+from dotenv import load_dotenv
+
+
+@dataclass(frozen=True)
+class AppConfig:
+    title: str
+    openai_model: str
+    openai_voice: str
+    openai_instructions: str
+    voicevox_url: str
+    voicevox_speaker_id: int
+    voicevox_speed: float
+    sample_rate: int
+    input_device: int | str | None
+    output_device: int | str | None
+
+
+def load_config(path: Path | str = "config.yaml") -> AppConfig:
+    load_dotenv()
+    config_path = Path(path)
+    raw: dict[str, Any] = {}
+    if config_path.is_file():
+        loaded = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            raw = loaded
+    app = raw.get("app", {})
+    openai = raw.get("openai", {})
+    voicevox = raw.get("voicevox", {})
+    audio = raw.get("audio", {})
+    sample_rate = int(audio.get("sample_rate", 24000))
+    if sample_rate != 24000:
+        raise ValueError(
+            "audio.sample_rate must be 24000 Hz for OpenAI Realtime PCM input."
+        )
+    return AppConfig(
+        title=str(app.get("title", "VOICEVOX Realtime Chat")),
+        openai_model=str(openai.get("model", "gpt-realtime-1.5")),
+        openai_voice=str(openai.get("voice", "alloy")),
+        openai_instructions=str(
+            openai.get("instructions", "あなたは親切で簡潔な日本語の音声アシスタントです。")
+        ),
+        voicevox_url=str(voicevox.get("base_url", "http://127.0.0.1:50021")).rstrip("/"),
+        voicevox_speaker_id=int(voicevox.get("speaker_id", 1)),
+        voicevox_speed=float(voicevox.get("speed_scale", 1.0)),
+        sample_rate=sample_rate,
+        input_device=audio.get("input_device"),
+        output_device=audio.get("output_device"),
+    )
+
+
+def get_openai_api_key() -> str | None:
+    value = os.getenv("OPENAI_API_KEY", "").strip()
+    return value or None
