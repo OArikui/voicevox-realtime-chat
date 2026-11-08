@@ -35,9 +35,14 @@ def load_config(path: Path | str = "config.yaml") -> AppConfig:
     openai = raw.get("openai", {})
     voicevox = raw.get("voicevox", {})
     audio = raw.get("audio", {})
+    sample_rate = int(audio.get("sample_rate", 24000))
+    if sample_rate != 24000:
+        raise ValueError(
+            "audio.sample_rate must be 24000 Hz for OpenAI Realtime PCM input."
+        )
     return AppConfig(
         title=str(app.get("title", "VOICEVOX Realtime Chat")),
-        openai_model=str(openai.get("model", "gpt-realtime")),
+        openai_model=str(openai.get("model", "gpt-realtime-1.5")),
         openai_voice=str(openai.get("voice", "alloy")),
         openai_instructions=str(
             openai.get("instructions", "あなたは親切で簡潔な日本語の音声アシスタントです。")
@@ -45,7 +50,7 @@ def load_config(path: Path | str = "config.yaml") -> AppConfig:
         voicevox_url=str(voicevox.get("base_url", "http://127.0.0.1:50021")).rstrip("/"),
         voicevox_speaker_id=int(voicevox.get("speaker_id", 1)),
         voicevox_speed=float(voicevox.get("speed_scale", 1.0)),
-        sample_rate=int(audio.get("sample_rate", 24000)),
+        sample_rate=sample_rate,
         input_device=audio.get("input_device"),
         output_device=audio.get("output_device"),
     )
