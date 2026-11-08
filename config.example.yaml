@@ -1,8 +1,7 @@
 app:
   title: "VOICEVOX Realtime Chat"
 openai:
-  model: "gpt-realtime"
-  voice: "alloy"
+  model: "gpt-realtime-1.5"
   instructions: "あなたは親切で簡潔な日本語の音声アシスタントです。"
 voicevox:
   base_url: "http://127.0.0.1:50021"
