@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "voicevox-realtime-chat"
+version = "0.1.0"
+description = "Real-time AI voice conversation application using OpenAI Realtime API and VOICEVOX TTS."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = ["PySide6>=6.8", "httpx>=0.27", "PyYAML>=6.0", "python-dotenv>=1.0", "websockets>=14.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-qt>=4.4", "ruff>=0.9"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/voicevox_realtime_chat"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
