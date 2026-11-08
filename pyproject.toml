@@ -4,12 +4,20 @@ build-backend = "hatchling.build"
 
 [project]
 name = "voicevox-realtime-chat"
-version = "0.1.0"
+version = "0.2.0"
 description = "Real-time AI voice conversation application using OpenAI Realtime API and VOICEVOX TTS."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-dependencies = ["PySide6>=6.8", "httpx>=0.27", "PyYAML>=6.0", "python-dotenv>=1.0", "websockets>=14.0"]
+dependencies = [
+    "PySide6>=6.8",
+    "httpx>=0.27",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+    "websockets>=14.0",
+    "sounddevice>=0.5",
+    "soundfile>=0.13",
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "pytest-qt>=4.4", "ruff>=0.9"]
