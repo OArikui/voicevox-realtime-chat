@@ -1,16 +1,16 @@
 # VOICEVOX Realtime Chat
 
-Windows向けのデスクトップ音声会話アプリです。OpenAI Realtime APIでマイク音声を認識し、返答テキストをローカルのVOICEVOX Engineで読み上げます。
+Windows向けの音声会話アプリの基盤です。音声合成にはローカルのVOICEVOX Engineを使用します。
 
-> 開発状況: v0.2.1 ではRealtime APIへのWebSocket接続、マイク音声の送信、サーバー側音声区間検出、返答テキストの受信、VOICEVOXによる読み上げを実装しています。割り込み時の再生キャンセル、発話の細かな分割再生、会話履歴の永続化は今後の改善対象です。
+> **開発状況（v0.3.0）:** AI会話エンジンは未定です。特定のクラウドAPIに依存しない方針とし、会話エンジンの選定・接続処理は今後の検討項目としています。現時点で利用できるのは、デスクトップアプリの起動とVOICEVOX Engineの接続確認です。アプリからAIとの音声会話を行うことはできません。
 
 ## 必要環境
 
 - Windows 10/11
 - Python 3.11 以降
-- VOICEVOX Engine（ローカルで起動）
-- OpenAI API key（Realtime API利用時に必要。ChatGPTのサブスクリプションとは別です）
-- マイクとスピーカー
+- VOICEVOX Engine（接続確認を行う場合）
+
+マイクやスピーカーの音声入出力方式は、会話エンジンの選定後に決定します。
 
 ## セットアップ
 
@@ -21,42 +21,35 @@ PowerShellでリポジトリのルートを開きます。
     python -m pip install --upgrade pip
     pip install -e ".[dev]"
     Copy-Item config.example.yaml config.yaml
-    Copy-Item .env.example .env
-
-.env の OPENAI_API_KEY にAPIキーを設定してください。APIキーはGitにコミットしないでください。
 
 ## 起動
 
     python run.py
 
-または run.bat を実行します。.venv があればそのPythonを使用します。
+または `run.bat` を実行します。`.venv` があればそのPythonを使用します。
 
 ## 設定
 
-config.yaml でモデル、VOICEVOX話者、読み上げ速度、マイク・スピーカーのデバイスを設定できます。
+`config.yaml` では、VOICEVOX Engineの接続先と話者・読み上げ速度を設定できます。
 
-- openai.model: Realtime APIのモデル（既定値: `gpt-realtime-1.5`）
-- audio.sample_rate: OpenAI Realtime PCM入力は 24000 Hz 固定です。異なる値を指定すると設定エラーになります。
-- audio.input_device / output_device: sounddevice のデバイス番号またはデバイス名。null の場合はOS既定デバイス
-- openai.instructions: Realtime APIに渡す応答指示
-- voicevox.speaker_id: VOICEVOXの話者スタイルID
+- `voicevox.base_url`: VOICEVOX EngineのURL（既定値: `http://127.0.0.1:50021`）
+- `voicevox.speaker_id`: VOICEVOXの話者スタイルID
+- `voicevox.speed_scale`: 読み上げ速度
 
-デバイス一覧は、Python環境で次を実行すると確認できます。
+## VOICEVOX Engineの確認
 
-    python -c "import sounddevice as sd; print(sd.query_devices())"
+1. VOICEVOXを起動します。
+2. アプリを起動します。
+3. 「VOICEVOX 接続確認」を押します。
+4. バージョンが表示されれば接続できています。
 
-## VOICEVOX
+既定の接続先は `http://127.0.0.1:50021` です。
 
-VOICEVOX Engineを起動し、既定の http://127.0.0.1:50021 でアクセスできるようにしてください。接続確認ボタンでEngineのバージョンを取得できます。会話開始前にEngineが利用可能であることを確認してください。
+## 会話機能について
 
-## 会話の使い方
+AI会話エンジンは **未定** です。現時点では会話開始・停止、マイク音声の送信、AI応答の取得は行いません。利用するエンジンや接続方法が決まった段階で、改めて設計・実装します。
 
-1. OpenAI APIキーとVOICEVOX Engineを準備します。
-2. アプリを起動し、「会話開始」を押します。
-3. マイクに向かって話します。発話区間検出後、AIの返答テキストをVOICEVOXが読み上げます。
-4. 終了するときは「会話停止」を押します。
-
-Realtime APIの利用にはOpenAI APIの利用料金が発生します。利用状況と料金はOpenAIのAPIダッシュボードで確認してください。
+以前のバージョンで作成した `.env` にAPIキーが保存されていても、このバージョンでは読み込みません。不要であればローカルの `.env` を削除してください。APIキーの値を共有する必要はありません。
 
 ## 開発・テスト
 
@@ -64,15 +57,17 @@ Realtime APIの利用にはOpenAI APIの利用料金が発生します。利用�
     ruff check .
     pytest
 
-CIではPython 3.11でRuffとpytestを実行します。実機のマイク・スピーカーおよびVOICEVOX Engineを使う統合テストは別途必要です。
+CIではPython 3.11でRuffとpytestを実行します。VOICEVOX Engineとの実機接続確認は別途必要です。
 
-## 実装ロードマップ
+## 実装状況
 
-1. 初期GUI、設定管理、VOICEVOX接続確認（v0.1.0）
-2. Realtime API接続、マイク入力、テキスト応答、VOICEVOX読み上げ（v0.2.1）
-3. 割り込み時の再生停止、音声再生とマイク入力のエコー対策
-4. 応答テキストの分割読み上げ、デバイス選択UI、会話履歴
-5. Windows向け配布パッケージとポータブル実行環境
+- [x] デスクトップGUIの起動
+- [x] YAML設定の読み込み
+- [x] VOICEVOX Engineの接続確認
+- [ ] AI会話エンジンの選定（未定）
+- [ ] 会話エンジンとの接続方式の設計・実装
+- [ ] マイク・スピーカーの入出力方式の決定
+- [ ] 会話履歴・割り込みなどの会話機能
 
 ## License
 

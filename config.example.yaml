@@ -1,8 +1,6 @@
 app:
   title: "VOICEVOX Realtime Chat"
-openai:
-  model: "gpt-realtime-1.5"
-  instructions: "あなたは親切で簡潔な日本語の音声アシスタントです。"
+
 voicevox:
   base_url: "http://127.0.0.1:50021"
   speaker_id: 1
@@ -10,8 +8,3 @@ voicevox:
   pitch_scale: 0.0
   intonation_scale: 1.0
   volume_scale: 1.0
-audio:
-  sample_rate: 24000
-  channels: 1
-  input_device: null
-  output_device: null
